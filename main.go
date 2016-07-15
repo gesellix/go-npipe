@@ -5,39 +5,43 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"net/url"
 	"os"
 	"runtime"
-	"github.com/gesellix/go-npipe/npipe"
+	"github.com/Microsoft/go-winio"
 )
 
+var echoPipeName = `\\.\pipe\echo_pipe`
+
 func printUsage() {
-	//var testPipeName = `\\.\pipe\winiotestpipe`
 
 	log.Printf("Usage: %s url", os.Args[0])
-	log.Printf("   ie: %s npipe:////./pipe/the_pipe", os.Args[0])
+	log.Printf("   ie: %s \\\\.\\pipe\\the_pipe", os.Args[0])
 	log.Println()
 	log.Printf("%s version: %s (%s on %s/%s; %s)", os.Args[0], "0.5", runtime.Version(), runtime.GOOS, runtime.GOARCH, runtime.Compiler)
 	log.Println()
 }
 
 func main() {
-	if len(os.Args) < 2 || os.Args[1] == "" {
+	if len(os.Args) < 2 {
 		printUsage()
 		os.Exit(1)
 	}
 
-	npipeURL, err := url.Parse(os.Args[1])
-	if err != nil {
-		log.Fatalf("could not parse url %q: %v", os.Args[1], err)
+	path := os.Args[1]
+	if path == "" {
+		printUsage()
+		path = echoPipeName
 	}
 
-	listener, err := npipe.Listen(npipeURL.Path)
+	log.Printf("using path: %q", path)
+
+	listener, err := winio.ListenPipe(path, nil)
+	//listener, err := npipe.Listen(path)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
 	if listener == nil {
-		log.Fatalf("listener is nil: %q", npipeURL.Path)
+		log.Fatalf("listener is nil: %q", path)
 	}
 	defer listener.Close()
 
