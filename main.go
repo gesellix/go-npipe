@@ -1,13 +1,14 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
-	"net"
+	"net/http"
 	"os"
 	"runtime"
 	"github.com/Microsoft/go-winio"
+	"net"
 )
 
 var echoPipeName = `\\.\pipe\echo_pipe`
@@ -36,47 +37,48 @@ func main() {
 	log.Printf("using path: %q", path)
 
 	listener, err := winio.ListenPipe(path, nil)
-	//listener, err := npipe.Listen(path)
 	if err != nil {
 		log.Fatalf("error: %v", err)
+		os.Exit(1)
 	}
 	if listener == nil {
 		log.Fatalf("listener is nil: %q", path)
+		os.Exit(1)
 	}
 	defer listener.Close()
 
-	con := clientConns(listener)
-	for {
-		go handleConn(<-con)
+	err = serve(listener)
+	if err != nil {
+		log.Fatalf("Serve: %v", err)
+		os.Exit(1)
 	}
 }
 
-func clientConns(listener net.Listener) chan net.Conn {
-	ch := make(chan net.Conn)
-	i := 0
-	go func() {
-		for {
-			client, err := listener.Accept()
-			if client == nil {
-				fmt.Printf("couldn't accept: %v", err)
-				continue
-			}
-			i++
-			fmt.Printf("%d: %v <-> %v\n", i, client.LocalAddr(), client.RemoteAddr())
-			ch <- client
-		}
-	}()
-	return ch
+func serve(l net.Listener) error {
+	http.HandleFunc("/", EchoServer)
+	http.HandleFunc("/exit", ExitServer)
+	return http.Serve(l, nil)
 }
 
-func handleConn(client net.Conn) {
-	b := bufio.NewReader(client)
-	for {
-		line, err := b.ReadBytes('\n')
-		if err != nil {
-			// EOF, or worse
-			break
-		}
-		client.Write(line)
+func EchoServer(w http.ResponseWriter, req *http.Request) {
+	body, err := ioutil.ReadAll(io.LimitReader(req.Body, 1048576))
+	if err != nil {
+		log.Panic(err)
 	}
+	defer req.Body.Close()
+	if body == nil {
+		io.WriteString(w, "[echo] OK")
+	} else {
+		io.WriteString(w, string(body))
+	}
+}
+
+func ExitServer(w http.ResponseWriter, req *http.Request) {
+	_, err := ioutil.ReadAll(io.LimitReader(req.Body, 1048576))
+	if err != nil {
+		log.Panic(err)
+	}
+	defer req.Body.Close()
+	io.WriteString(w, "exit")
+	os.Exit(0)
 }
