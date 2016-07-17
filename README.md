@@ -14,7 +14,7 @@ The request method will be ignored, so you can use any of `GET`, `POST` or whate
 ### Command Line
 
     go get ./...
-    CGO_ENABLED=0 GOARCH=386 GOOS=windows go build -o npipe.exe main.go
+    CGO_ENABLED=0 GOARCH=amd64 GOOS=windows go build -o npipe.exe main.go
      
 ### Docker
 
