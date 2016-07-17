@@ -1,4 +1,4 @@
-# Windows Named Pipes helper
+# Windows Named Pipe Http Echo Server.
 
 ## About
 
