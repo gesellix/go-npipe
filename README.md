@@ -17,8 +17,7 @@ The request method will be ignored, so you can use any of `GET`, `POST` or whate
      
 ### Docker
 
-    docker build -t npipe .
-    docker create --name npipe npipe
+    docker create --name npipe gesellix/npipe
     docker cp npipe:/npipe.exe .
     docker rm npipe
 
