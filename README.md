@@ -9,10 +9,11 @@ Requests on `/exit` will stop the tool and remove the pipe.
 
 The request method will be ignored, so you can use any of `GET`, `POST` or whatever.
 
-## Build
+## Build/Install
 
 ### Command Line
 
+    go get ./...
     CGO_ENABLED=0 GOARCH=386 GOOS=windows go build -o npipe.exe main.go
      
 ### Docker
