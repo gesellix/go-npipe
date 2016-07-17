@@ -4,22 +4,23 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"os"
-	"runtime"
+	"strings"
 	"github.com/Microsoft/go-winio"
-	"net"
 )
 
-var echoPipeName = `\\.\pipe\echo_pipe`
-
 func printUsage() {
-
-	log.Printf("Usage: %s url", os.Args[0])
-	log.Printf("   ie: %s \\\\.\\pipe\\the_pipe", os.Args[0])
+	oldFlags := log.Flags()
+	log.SetFlags(0)
 	log.Println()
-	log.Printf("%s version: %s (%s on %s/%s; %s)", os.Args[0], "0.5", runtime.Version(), runtime.GOOS, runtime.GOARCH, runtime.Compiler)
+	log.Printf("Usage:   %s <path>", os.Args[0])
+	log.Printf("Example: %s \\\\.\\pipe\\the_pipe", os.Args[0])
 	log.Println()
+	log.Print("Any request on '/exit' stops the server and removes the pipe")
+	log.Println()
+	log.SetFlags(oldFlags)
 }
 
 func main() {
@@ -29,11 +30,6 @@ func main() {
 	}
 
 	path := os.Args[1]
-	if path == "" {
-		printUsage()
-		path = echoPipeName
-	}
-
 	log.Printf("using path: %q", path)
 
 	listener, err := winio.ListenPipe(path, nil)
@@ -67,9 +63,12 @@ func EchoServer(w http.ResponseWriter, req *http.Request) {
 	}
 	defer req.Body.Close()
 	if body == nil {
+		log.Print("got empty body")
 		io.WriteString(w, "[echo] OK")
 	} else {
-		io.WriteString(w, string(body))
+		log.Printf("got '%q'", string(body))
+		response := []string{"[echo]", string(body)}
+		io.WriteString(w, strings.Join(response, " "))
 	}
 }
 
@@ -79,6 +78,10 @@ func ExitServer(w http.ResponseWriter, req *http.Request) {
 		log.Panic(err)
 	}
 	defer req.Body.Close()
-	io.WriteString(w, "exit")
-	os.Exit(0)
+	log.Print("exiting")
+	io.WriteString(w, "[echo] exit\n")
+	if f, ok := w.(http.Flusher); ok {
+		f.Flush()
+	}
+	defer os.Exit(0)
 }
