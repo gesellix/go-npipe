@@ -2,7 +2,7 @@ FROM golang:1.6-alpine
 MAINTAINER Tobias Gesellchen <tobias@gesellix.de> (@gesellix)
 
 RUN apk add --no-cache git && \
-    mkdir /go/src/github.com/gesellix/go-npipe/
+    mkdir -p /go/src/github.com/gesellix/go-npipe/
 
 WORKDIR /go/src/github.com/gesellix/go-npipe/
 
