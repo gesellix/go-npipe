@@ -6,7 +6,8 @@ RUN apk add --no-cache git && \
 
 WORKDIR /go/src/github.com/gesellix/go-npipe/
 
-# we don't really need to run this image
+# we don't really need to run this image, but we add a CMD
+# to make it run more convenient
 CMD /npipe.exe
 
 ENV CGO_ENABLED 0
