@@ -51,12 +51,12 @@ func main() {
 }
 
 func serve(l net.Listener) error {
-	http.HandleFunc("/", EchoServer)
-	http.HandleFunc("/exit", ExitServer)
+	http.HandleFunc("/", HandleDefault)
+	http.HandleFunc("/exit", HandleExit)
 	return http.Serve(l, nil)
 }
 
-func EchoServer(w http.ResponseWriter, req *http.Request) {
+func HandleDefault(w http.ResponseWriter, req *http.Request) {
 	body, err := ioutil.ReadAll(io.LimitReader(req.Body, 1048576))
 	if err != nil {
 		log.Panic(err)
@@ -72,7 +72,7 @@ func EchoServer(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func ExitServer(w http.ResponseWriter, req *http.Request) {
+func HandleExit(w http.ResponseWriter, req *http.Request) {
 	_, err := ioutil.ReadAll(io.LimitReader(req.Body, 1048576))
 	if err != nil {
 		log.Panic(err)
