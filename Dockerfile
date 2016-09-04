@@ -1,4 +1,4 @@
-FROM golang:1.6-alpine
+FROM golang:1.7-alpine
 MAINTAINER Tobias Gesellchen <tobias@gesellix.de> (@gesellix)
 
 RUN apk add --no-cache git && \
