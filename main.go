@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/Microsoft/go-winio"
 	"io"
 	"io/ioutil"
 	"log"
@@ -8,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"github.com/Microsoft/go-winio"
 )
 
 func printUsage() {
