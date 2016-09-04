@@ -13,9 +13,9 @@ The request method will be ignored, so you can use any of `GET`, `POST` or whate
 
 ### Command Line
 
-    go get ./...
+    go get -d github.com/gesellix/go-npipe
     CGO_ENABLED=0 GOARCH=amd64 GOOS=windows go build -o npipe.exe main.go
-     
+
 ### Docker
 
     docker create --name npipe gesellix/npipe
