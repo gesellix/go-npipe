@@ -17,7 +17,7 @@ This tool comes in handy when running integration tests. There's no trivial way 
  
 You can find my own use case in the [integration tests for the Docker Client](https://github.com/gesellix/docker-client/blob/94ea21ff5620235d51a2adbc4b4106d55e0b0887/client/src/integrationTest/groovy/de/gesellix/docker/client/filesocket/HttpOverNamedPipeIntegrationTest.groovy#L55).
 As soon as the project is built on a Windows system, the integration tests verify
- the basic ability to create a named pipe socket.  
+ the basic ability to use a named pipe socket for communication with the Docker engine.  
 
 ### Yeah, Windows only, but who cares? ¯\_(ツ)_/¯
 
