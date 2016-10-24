@@ -1,0 +1,4 @@
+FROM microsoft/nanoserver
+MAINTAINER Tobias Gesellchen <tobias@gesellix.de> (@gesellix)
+
+COPY npipe.exe /npipe.exe
