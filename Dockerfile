@@ -1,5 +1,5 @@
-FROM golang:1.7-alpine
-MAINTAINER Tobias Gesellchen <tobias@gesellix.de> (@gesellix)
+FROM golang:1.11-alpine
+LABEL maintainer="Tobias Gesellchen <tobias@gesellix.de> (@gesellix)"
 
 RUN apk add --no-cache git && \
     mkdir -p /go/src/github.com/gesellix/go-npipe/
