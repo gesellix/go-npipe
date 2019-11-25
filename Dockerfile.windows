@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/windows/nanoserver:1903
+FROM mcr.microsoft.com/windows/nanoserver:1803
 LABEL maintainer="Tobias Gesellchen <tobias@gesellix.de> (@gesellix)"
 
 COPY npipe.exe /npipe.exe
