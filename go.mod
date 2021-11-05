@@ -1,8 +1,7 @@
 module github.com/gesellix/go-npipe
 
-go 1.13
+go 1.17
 
-require (
-	github.com/Microsoft/go-winio v0.4.14
-	golang.org/x/sys v0.0.0-20200302150141-5c8b2ff67527 // indirect
-)
+require github.com/Microsoft/go-winio v0.5.1
+
+require golang.org/x/sys v0.0.0-20211105183446-c75c47738b0c // indirect

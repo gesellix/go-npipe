@@ -1,5 +1,6 @@
 .idea
 *.iml
 
+main.exe
 npipe.exe
 go-npipe.exe

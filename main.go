@@ -35,18 +35,15 @@ func main() {
 	listener, err := winio.ListenPipe(path, nil)
 	if err != nil {
 		log.Fatalf("error: %v", err)
-		os.Exit(1)
 	}
 	if listener == nil {
 		log.Fatalf("listener is nil: %q", path)
-		os.Exit(1)
 	}
 	defer listener.Close()
 
 	err = serve(listener)
 	if err != nil {
 		log.Fatalf("Serve: %v", err)
-		os.Exit(1)
 	}
 }
 
