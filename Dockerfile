@@ -15,4 +15,6 @@ ENV GOARCH amd64
 ENV GOOS windows
 
 COPY *.go /go/src/github.com/gesellix/go-npipe/
+COPY go.mod /go/src/github.com/gesellix/go-npipe/
+COPY go.sum /go/src/github.com/gesellix/go-npipe/
 RUN go get ./... && go build -o /npipe.exe
