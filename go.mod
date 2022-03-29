@@ -3,7 +3,7 @@ module github.com/gesellix/go-npipe
 go 1.17
 
 require (
-	github.com/Microsoft/go-winio v0.5.1
+	github.com/Microsoft/go-winio v0.5.2
 	github.com/pkg/errors v0.9.1
 )
 
