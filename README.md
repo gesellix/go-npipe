@@ -34,11 +34,17 @@ Since Windows Named Pipes are a Windows only concept (similar to Unix Domain Soc
 ### Command Line
 
     go get -d github.com/gesellix/go-npipe
+    cd src
     CGO_ENABLED=0 GOARCH=amd64 GOOS=windows go build -o npipe.exe main.go
 
 ### Docker :whale:
 
-    docker create --name npipe gesellix/npipe
+    docker build -t npipe:local -f linux/Dockerfile .
+    docker create --name npipe npipe:local
+    # Or from the Docker Hub (linux):
+    #docker create --name npipe gesellix/npipe
+    # Or from the Docker Hub (windows):
+    #docker create --name npipe gesellix/npipe:windows
     docker cp npipe:/npipe.exe .
     docker rm npipe
 
