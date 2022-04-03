@@ -1,10 +1,18 @@
 version: 2
 updates:
+  - package-ecosystem: docker
+    directory: /linux
+    schedule:
+      interval: daily
+  - package-ecosystem: docker
+    directory: /windows
+    schedule:
+      interval: daily
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: daily
   - package-ecosystem: gomod
-    directory: /
+    directory: /src
     schedule:
       interval: daily
