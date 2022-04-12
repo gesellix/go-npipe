@@ -1,0 +1,118 @@
+---
+name: Build and Push multi-arch Docker image
+
+on:
+  release:
+    types:
+      - released
+#      - published
+
+jobs:
+  build-publish-containers:
+    name: Build and Publish Containers
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 3
+      matrix:
+        include:
+          - platform: linux/amd64
+            os: ubuntu-latest
+            use-buildx: true
+#            base: 3.15.4
+            file: linux/Dockerfile
+            tag-suffix: -linux-amd64
+          - platform: linux/arm64/8
+            os: ubuntu-latest
+            use-buildx: true
+#            base: 3.15.4
+            file: linux/Dockerfile
+            tag-suffix: -linux-arm64-8
+          - platform: windows/amd64
+#            os: windows-latest
+            os: windows-2022
+            # Not supported under Windows, see:
+            # Not supported by buildx, yet ("Error response from daemon: Windows does not support privileged mode")
+            # Related: https://github.com/docker/buildx/issues/176
+            # Related: https://github.com/docker/build-push-action/issues/18
+            use-buildx: false
+#            base: ltsc2022
+            file: windows/Dockerfile
+            tag-suffix: -windows-amd64
+    steps:
+      - name: Set release version
+        if: ${{ matrix.use-buildx == true }}
+        run: |
+          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
+      - name: Set release version
+        if: ${{ matrix.use-buildx == false }}
+        run: |
+          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Print release version
+        run: |
+          echo ${{ env.RELEASE_VERSION }}
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up QEMU
+        if: ${{ matrix.use-buildx == true }}
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        if: ${{ matrix.use-buildx == true }}
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and Push image
+        if: ${{ matrix.use-buildx == true }}
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ${{ matrix.file }}
+#          build-args: |
+#            BASE=${{ matrix.base }}
+          platforms: ${{ matrix.platform }}
+          push: true
+          tags: gesellix/npipe:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }}
+      - name: Docker Build
+        if: ${{ matrix.use-buildx == false }}
+        run: |
+          docker build -f ${{ matrix.file }} -t gesellix/npipe:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }} .
+#          docker build -f ${{ matrix.file }} --build-arg BASE=${{ matrix.base }} -t gesellix/npipe:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }} .
+      - name: Docker Push
+        if: ${{ matrix.use-buildx == false }}
+        run: |
+          docker push gesellix/npipe:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }}
+  # from:
+  # https://github.com/phillipsj/pstools/blob/main/.github/workflows/publish.yaml
+  # https://www.phillipsj.net/posts/building-windows-and-linux-containers-with-github-actions/
+  publish-manifest:
+    name: Publish Manifest
+    runs-on: ubuntu-latest
+    needs: build-publish-containers
+    steps:
+      - name: Set release version
+        run: |
+          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Docker Manifest
+        run: |
+          docker manifest create gesellix/npipe:${{ env.RELEASE_VERSION }} \
+            --amend gesellix/npipe:${{ env.RELEASE_VERSION }}-linux-amd64 \
+            --amend gesellix/npipe:${{ env.RELEASE_VERSION }}-linux-arm64-8 \
+            --amend gesellix/npipe:${{ env.RELEASE_VERSION }}-windows-amd64
+#      - name: Docker Annotate
+#        run: |
+#          docker manifest annotate --os windows --arch amd64 \
+#            --os-version "10.0.20348.169"\
+#            gesellix/npipe:${{ env.RELEASE_VERSION }} gesellix/npipe:${{ env.RELEASE_VERSION }}-windows-amd64
+      - name: Docker Push
+        run: |
+          docker manifest push gesellix/npipe:${{ env.RELEASE_VERSION }}
+...
