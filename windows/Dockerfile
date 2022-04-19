@@ -10,7 +10,7 @@ RUN cd /app && go get -d \
  && go build \
     -a \
     -ldflags "-s -w -extldflags \"-static\"" \
-    -o /npipe.exe main.go
+    -o /bin/npipe.exe main.go
 
 FROM mcr.microsoft.com/windows/nanoserver:ltsc2022
 
@@ -20,4 +20,4 @@ ENV LANG=C.UTF-8
 # to make it run more convenient
 CMD /npipe.exe
 
-COPY --from=build-backend /npipe.exe /npipe.exe
+COPY --from=build-backend /bin/npipe.exe /npipe.exe
