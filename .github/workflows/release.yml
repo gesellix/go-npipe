@@ -34,8 +34,6 @@ jobs:
         with:
           context: .
           file: linux/Dockerfile
-#          build-args: |
-#            BASE=${{ matrix.base }}
           platforms: linux/amd64,linux/arm64/8
           push: true
           tags: gesellix/npipe:${{ env.RELEASE_VERSION }}-linux
@@ -59,7 +57,6 @@ jobs:
       - name: Docker Build
         run: |
           docker build -f windows/Dockerfile -t gesellix/npipe:${{ env.RELEASE_VERSION }}-windows .
-#          docker build -f windows/Dockerfile --build-arg BASE=${{ matrix.base }} -t gesellix/npipe:${{ env.RELEASE_VERSION }}-windows .
       - name: Docker Push
         run: |
           docker push gesellix/npipe:${{ env.RELEASE_VERSION }}-windows
@@ -74,8 +71,6 @@ jobs:
       - name: Set release version
         run: |
           echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
-#      - name: Set up QEMU
-#        uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
@@ -88,7 +83,4 @@ jobs:
           docker buildx imagetools create -t gesellix/npipe:${{ env.RELEASE_VERSION }} \
             gesellix/npipe:${{ env.RELEASE_VERSION }}-linux \
             gesellix/npipe:${{ env.RELEASE_VERSION }}-windows
-#      - name: Docker Push
-#        run: |
-#          docker manifest push gesellix/npipe:${{ env.RELEASE_VERSION }}
 ...
