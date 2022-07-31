@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-publish-linux:
-    name: Build and Publish Containers
+    name: Build and Publish Containers (Linux)
     runs-on: ubuntu-latest
     steps:
       - name: Set release version
@@ -40,7 +40,7 @@ jobs:
           push: true
           tags: gesellix/npipe:${{ env.RELEASE_VERSION }}-linux
   build-publish-windows:
-    name: Build and Publish Containers
+    name: Build and Publish Containers (Windows)
     runs-on: windows-2022
     steps:
       - name: Set release version
@@ -74,8 +74,10 @@ jobs:
       - name: Set release version
         run: |
           echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
-      - name: Checkout
-        uses: actions/checkout@v3
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
@@ -83,15 +85,11 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker Manifest
         run: |
-          docker manifest create gesellix/npipe:${{ env.RELEASE_VERSION }} \
-            --amend gesellix/npipe:${{ env.RELEASE_VERSION }}-linux \
-            --amend gesellix/npipe:${{ env.RELEASE_VERSION }}-windows
-#      - name: Docker Annotate
+          docker buildx imagetools create --append -t \
+            gesellix/npipe:${{ env.RELEASE_VERSION }} \
+            gesellix/npipe:${{ env.RELEASE_VERSION }}-linux \
+            gesellix/npipe:${{ env.RELEASE_VERSION }}-windows
+#      - name: Docker Push
 #        run: |
-#          docker manifest annotate --os windows --arch amd64 \
-#            --os-version "10.0.20348.169"\
-#            gesellix/npipe:${{ env.RELEASE_VERSION }} gesellix/npipe:${{ env.RELEASE_VERSION }}-windows-amd64
-      - name: Docker Push
-        run: |
-          docker manifest push gesellix/npipe:${{ env.RELEASE_VERSION }}
+#          docker manifest push gesellix/npipe:${{ env.RELEASE_VERSION }}
 ...
