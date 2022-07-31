@@ -85,8 +85,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker Manifest
         run: |
-          docker buildx imagetools create --append -t \
-            gesellix/npipe:${{ env.RELEASE_VERSION }} \
+          docker buildx imagetools create -t gesellix/npipe:${{ env.RELEASE_VERSION }} \
             gesellix/npipe:${{ env.RELEASE_VERSION }}-linux \
             gesellix/npipe:${{ env.RELEASE_VERSION }}-windows
 #      - name: Docker Push
