@@ -7,4 +7,4 @@ require (
 	github.com/pkg/errors v0.9.1
 )
 
-require golang.org/x/sys v0.0.0-20211105183446-c75c47738b0c // indirect
+require golang.org/x/sys v0.0.0-20220730100132-1609e554cd39 // indirect
