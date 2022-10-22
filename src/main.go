@@ -5,7 +5,6 @@ import (
 	"github.com/Microsoft/go-winio"
 	"github.com/pkg/errors"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -60,7 +59,7 @@ func serve(l net.Listener) error {
 
 func HandleDefault(w http.ResponseWriter, req *http.Request) {
 	log.Printf("<default handler> for %s %s\n", req.Method, req.RequestURI)
-	body, err := ioutil.ReadAll(io.LimitReader(req.Body, 1048576))
+	body, err := io.ReadAll(io.LimitReader(req.Body, 1048576))
 	if err != nil {
 		log.Panic(err)
 	}
@@ -76,7 +75,7 @@ func HandleDefault(w http.ResponseWriter, req *http.Request) {
 }
 
 func HandleExit(w http.ResponseWriter, req *http.Request) {
-	_, err := ioutil.ReadAll(io.LimitReader(req.Body, 1048576))
+	_, err := io.ReadAll(io.LimitReader(req.Body, 1048576))
 	if err != nil {
 		log.Panic(err)
 	}
