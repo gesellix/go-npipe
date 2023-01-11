@@ -1,4 +1,4 @@
-FROM golang:1.19.4-nanoserver AS build-backend
+FROM golang:1.19.5-nanoserver AS build-backend
 
 ENV CGO_ENABLED 0
 ENV GO111MODULE=on
