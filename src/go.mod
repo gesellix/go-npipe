@@ -2,8 +2,6 @@ module github.com/gesellix/go-npipe
 
 go 1.23
 
-toolchain go1.22.3
-
 require (
 	github.com/Microsoft/go-winio v0.6.2
 	github.com/pkg/errors v0.9.1
