@@ -12,7 +12,7 @@ RUN cd /app && go mod download \
     -ldflags '-s -w -extldflags "-static"' \
     -o /npipe.exe main.go
 
-FROM alpine:3.21.0
+FROM alpine:3.21.1
 
 ENV LANG=C.UTF-8
 
