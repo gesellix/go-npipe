@@ -197,7 +197,7 @@ func NewWrapReadCloser(r io.Reader) io.ReadCloser {
 // Read reads up to len(p) bytes into p.
 func (w *wrapReadCloser) Read(p []byte) (int, error) {
 	n, err := w.reader.Read(p)
-	if err == io.ErrClosedPipe {
+	if errors.Is(err, io.ErrClosedPipe) {
 		return n, io.EOF
 	}
 	return n, err
