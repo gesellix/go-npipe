@@ -1,4 +1,4 @@
-FROM golang:1.25.5-alpine AS build-backend
+FROM golang:1.26rc2-alpine AS build-backend
 
 ENV CGO_ENABLED=0
 ENV GO111MODULE=on
