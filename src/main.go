@@ -51,7 +51,6 @@ func main() {
 
 func serve(l net.Listener) error {
 	http.HandleFunc("/", HandleDefault)
-	http.HandleFunc("/containers/", HandleHijacked)
 	http.HandleFunc("/hijack/", HandleHijacked)
 	http.HandleFunc("/exit", HandleExit)
 	return http.Serve(l, nil)
