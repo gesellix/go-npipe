@@ -10,7 +10,7 @@ RUN cd /app && go mod download \
  && go build \
     -a \
     -ldflags '-s -w -extldflags "-static"' \
-    -o /npipe.exe main.go
+    -o /bin/npipe.exe main.go
 
 FROM alpine:3.24.3
 
@@ -20,4 +20,4 @@ ENV LANG=C.UTF-8
 # to make it run more convenient
 CMD ["/npipe.exe"]
 
-COPY --from=build-backend /npipe.exe /npipe.exe
+COPY --from=build-backend /bin/npipe.exe /npipe.exe
