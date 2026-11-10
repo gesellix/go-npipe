@@ -6,6 +6,26 @@ on:
   push:
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    env:
+      # the code only builds for Windows (go-winio named pipes)
+      GOOS: windows
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: src/go.mod
+          cache-dependency-path: src/go.sum
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.15.0
+          working-directory: src
+
   build-linux:
     name: Build (Linux)
     runs-on: ubuntu-latest
