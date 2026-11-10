@@ -1,6 +1,6 @@
 module github.com/gesellix/go-npipe
 
-go 1.26.6
+go 1.27.3
 
 require (
 	github.com/Microsoft/go-winio v0.6.4
