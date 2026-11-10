@@ -65,11 +65,15 @@ func HandleDefault(w http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
 	if body == nil {
 		log.Print("got empty body")
-		io.WriteString(w, "[echo] OK")
+		if _, err := io.WriteString(w, "[echo] OK"); err != nil {
+			log.Printf("failed to write response: %v", err)
+		}
 	} else {
 		log.Printf("got '%q'", string(body))
 		response := []string{"[echo]", string(body)}
-		io.WriteString(w, strings.Join(response, " "))
+		if _, err := io.WriteString(w, strings.Join(response, " ")); err != nil {
+			log.Printf("failed to write response: %v", err)
+		}
 	}
 }
 
@@ -80,7 +84,9 @@ func HandleExit(w http.ResponseWriter, req *http.Request) {
 	}
 	defer req.Body.Close()
 	log.Print("exiting")
-	io.WriteString(w, "[echo] exit\n")
+	if _, err := io.WriteString(w, "[echo] exit\n"); err != nil {
+		log.Printf("failed to write response: %v", err)
+	}
 	if f, ok := w.(http.Flusher); ok {
 		f.Flush()
 	}
@@ -154,7 +160,9 @@ func HandleHijacked(w http.ResponseWriter, req *http.Request) {
 	}()
 
 	attachStream := func(key string, close <-chan struct{}) {
-		io.Copy(rw, reader)
+		if _, err := io.Copy(rw, reader); err != nil {
+			log.Printf("Failed to copy attach stream %q: %v\n", key, err)
+		}
 		<-close
 		log.Printf("Attach stream %q closed", key)
 		// Make sure stdin gets closed.
